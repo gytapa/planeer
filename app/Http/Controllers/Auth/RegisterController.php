@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Employee;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -38,6 +40,40 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->middleware('guest:employee');
+        $this->middleware('guest:user');
+    }
+
+    public function showEmployeeRegisterForm()
+    {
+        return view('auth.register', ['url' => 'employee']);
+    }
+
+    public function showUserRegisterForm()
+    {
+        return view('auth.register', ['url' => 'user']);
+    }
+
+    protected function createEmployee(Request $request)
+    {
+        $this->validator($request->all())->validate();
+        $admin = Employee::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+        ]);
+        return redirect()->intended('login/employee');
+    }
+
+    protected function createUser(Request $request)
+    {
+        $this->validator($request->all())->validate();
+        $user = User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+        ]);
+        return redirect()->intended('login/user');
     }
 
     /**
