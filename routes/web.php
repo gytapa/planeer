@@ -29,5 +29,6 @@ Route::post('/register/employee', 'Auth\RegisterController@createEmployee');
 Route::post('/register/user', 'Auth\RegisterController@createUser');
 
 Route::view('/home', 'home')->middleware('auth');
-Route::view('/employee', 'employee');
+Route::get('/employee', 'Employee\HomeController@indexPage');
 Route::view('/user', 'user');
+Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');

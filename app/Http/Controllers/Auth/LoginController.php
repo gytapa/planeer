@@ -36,9 +36,9 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
-        $this->middleware('guest:employee')->except('logout');
-        $this->middleware('guest:user')->except('logout');
+//        $this->middleware('guest')->except('logout');
+//        $this->middleware('guest:employee')->except('logout');
+//        $this->middleware('guest:user')->except('logout');
     }
 
     public function employeeLogin(Request $request)
@@ -49,19 +49,20 @@ class LoginController extends Controller
         ]);
 
         if (Auth::guard('employee')->attempt(['email' => $request->email, 'password' => $request->password], $request->get('remember'))) {
-
-            return redirect()->intended('/employee');
+            return redirect('/employee');
         }
         return back()->withInput($request->only('email', 'remember'));
     }
 
     public function showUserLoginForm()
     {
+        Auth::logout();
         return view('auth.login', ['url' => 'user']);
     }
 
     public function showEmployeeLoginForm()
     {
+        Auth::logout();
         return view('auth.login', ['url' => 'employee']);
     }
 
@@ -77,5 +78,13 @@ class LoginController extends Controller
             return redirect()->intended('/user');
         }
         return back()->withInput($request->only('email', 'remember'));
+    }
+
+    public function logout(Request $request) {
+
+        $this->guard()->logout();
+        $request->session()->flush();
+        $request->session()->regenerate();
+        return redirect('/');
     }
 }
